@@ -29,13 +29,11 @@ describe('#calSched', function() {
     });
 
 
-
-
     // NUMBER OF WEEKS, MULTI-DAY
 
     it('should convert weekly multi-day recurrence', function() {
         var result = calSched({w:[1],d:[4,6]});
-        expect(result).to.equal('RRULE:FREQ=WEEKLY;BYDAY=TU,FR');
+        expect(result).to.equal('RRULE:FREQ=WEEKLY;BYDAY=WE,FR');
     });
 
     it('should convert bi-weekly multi-day recurrence', function() {
