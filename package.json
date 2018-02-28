@@ -11,11 +11,12 @@
     "lint": "standard",
     "test-spec": "mocha {lib,test}/**/*.spec.js -R spec --bail",
     "test-cov": "istanbul cover -x *.spec.js node_modules/mocha/bin/_mocha -- {lib,test}/**/*.spec.js -R spec --bail",
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec",
+    "cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec test/*"
   },
-  "scriptsComments":{
-    "note": "Comments on scripts above, see https://stackoverflow.com/posts/45815391/revisions"
-    ,"test": "Default was 'npm run lint && npm run test-cov', modified following https://codeburst.io/how-to-create-and-publish-your-first-node-js-module-444e7585b738"
+  "scriptsComments": {
+    "note": "Comments on scripts above, see https://stackoverflow.com/posts/45815391/revisions",
+    "test": "Default was 'npm run lint && npm run test-cov', modified following https://codeburst.io/how-to-create-and-publish-your-first-node-js-module-444e7585b738"
   },
   "standard": {
     "ignore": [
@@ -37,7 +38,8 @@
   "homepage": "https://github.com/mmorrey/cal-sched",
   "devDependencies": {
     "chai": "^3.5.0",
-    "istanbul": "^0.3.5",
+    "coveralls": "^3.0.0",
+    "istanbul": "^0.3.22",
     "mocha": "^2.5.3",
     "pre-commit": "^1.1.1",
     "standard": "^5.0.0"
