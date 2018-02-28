@@ -2,7 +2,7 @@
 
 /**
  * Convert LaterJS schedule into Calendar recurrence string
- * @param {number} number
+ * @param {object} schedule
  * @param {string} locale
  * @return {string}
  */
@@ -17,12 +17,20 @@
 
 // ToDo - generalise to secondly, minutely....monthly, yearly
 
+
+
 module.exports = function(schedule) {
  
     if (typeof schedule === 'object') {
 
         //console.log(JSON.stringify(schedule));
-        //console.log(typeof(schedule.w));  // "object" (not "array")
+        //console.log(typeof(schedule.wy));  // "object" (not "array")
+
+        /*
+        let translationTable = {
+            "s":{"scale":1, "frequency"  }
+        }*/
+
 
         let day2string = (day) => {
             var dayStrings = ["SU","MO","TU","WE","TH","FR","SA"];
@@ -35,13 +43,13 @@ module.exports = function(schedule) {
 
         if (Array.isArray(schedule.d)) {  // 
             freq='DAILY';
-            interval=schedule.d[0]; // ToDo - handle multiple week entries
+            interval=schedule.d[0]; // ToDo - handle multiple day entries
             byDayString = schedule.d.map(day2string).join(","); // https://codeburst.io/javascript-learn-to-chain-map-filter-and-reduce-acd2d0562cd4
         }
 
-        if (Array.isArray(schedule.w)) {
+        if (Array.isArray(schedule.wy)) {
             freq='WEEKLY';
-            interval=schedule.w[0]; // ToDo - handle multiple week entries
+            interval=schedule.wy[0]; // ToDo - handle multiple week entries
         }
 
         var recurrenceString = 'RRULE:FREQ=' + freq;
@@ -54,3 +62,10 @@ module.exports = function(schedule) {
 
 };
 
+function getFrequency (schedule) {
+     /  /  / "DAILY" / "WEEKLY" / "MONTHLY" / "YEARLY"
+    let orderArr = [['s',1], ['m',2],['h',3],['d',4],['dw',4],['dc',4],['dy',4],['wy',5],['wm',5],['m',6],['y',7]];
+    let order = new Map(orderArr);
+    //let freqArr = [['s',"SECONDLY"], ['m',"MINUTELY"],['h',"HOURLY"],['d',4],['dw',4],['dc',4],['dy',4],['wy',5],['wm',5],['m',6],['y',7]];
+    //let frequency = new Map(frequncyArr);
+}

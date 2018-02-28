@@ -1,6 +1,6 @@
 # Cal Sched
 
-Convert Later.js schedule objects into recurring calendar entries, following RFC 5545.   I have written this to make it easier to use Google Calendar for scheduling of long-term repeating events, instead of setInterval() or cron, both of which have their limitations for this purpose.
+IN DEVELOPMENT.   Plan is to convert Later.js schedule objects into recurring calendar entries, following RFC 5545.   I am writing this to make it easier to use Google Calendar for scheduling of long-term repeating events, instead of setInterval() or cron, both of which have their limitations for this purpose.
 
 [![NPM version][npm-image]][npm-url]
 [![NPM downloads][downloads-image]][downloads-url]
