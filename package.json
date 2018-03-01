@@ -1,6 +1,6 @@
 {
   "name": "cal-sched",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -45,6 +45,7 @@
     "standard": "^5.0.0"
   },
   "dependencies": {
-    "later": "^1.2.0"
+    "later": "^1.2.0",
+    "moment": "^2.20.1"
   }
 }

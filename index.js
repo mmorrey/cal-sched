@@ -1,4 +1,5 @@
 'use strict';
+var moment = require('moment');
 
 /**
  * Convert LaterJS schedule into Calendar recurrence string
@@ -17,50 +18,62 @@
 
 // ToDo - generalise to secondly, minutely....monthly, yearly
 
+var timeZone = "United Kingdom/London"; // DEFAULT
 
+module.exports = {
 
-module.exports = function(schedule) {
+    recurrence: function(schedule) {
  
-    if (typeof schedule === 'object') {
+        if (typeof schedule === 'object') {
 
-        //console.log(JSON.stringify(schedule));
-        //console.log(typeof(schedule.wy));  // "object" (not "array")
+            let day2string = (day) => {
+                var dayStrings = ["SU","MO","TU","WE","TH","FR","SA"];
+                return dayStrings[day-1]; // later.js days are 1-7
+            }
+            
+            var freq = '';
+            var byDayString = '';
+            var interval = 1;
 
-        /*
-        let translationTable = {
-            "s":{"scale":1, "frequency"  }
-        }*/
+            if (Array.isArray(schedule.d)) {  // 
+                freq='DAILY';
+                interval=schedule.d[0]; // ToDo - handle multiple day entries
+                byDayString = schedule.d.map(day2string).join(","); // https://codeburst.io/javascript-learn-to-chain-map-filter-and-reduce-acd2d0562cd4
+            }
 
+            if (Array.isArray(schedule.wy)) {
+                freq='WEEKLY';
+                interval=schedule.wy[0]; // ToDo - handle multiple week entries
+            }
 
-        let day2string = (day) => {
-            var dayStrings = ["SU","MO","TU","WE","TH","FR","SA"];
-            return dayStrings[day-1]; // later.js days are 1-7
+            var recurrenceString = 'RRULE:FREQ=' + freq;
+            if (interval > 1) {recurrenceString += ';INTERVAL='+interval};
+            if (byDayString != '') {recurrenceString += ';BYDAY='+byDayString};
+
+            //var recurrenceString ='RRULE:FREQ=WEEKLY;INTERVAL=4;BYDAY=MO,TH';
+            return recurrenceString;
         }
-        
-        var freq = '';
-        var byDayString = '';
-        var interval = 1;
 
-        if (Array.isArray(schedule.d)) {  // 
-            freq='DAILY';
-            interval=schedule.d[0]; // ToDo - handle multiple day entries
-            byDayString = schedule.d.map(day2string).join(","); // https://codeburst.io/javascript-learn-to-chain-map-filter-and-reduce-acd2d0562cd4
-        }
-
-        if (Array.isArray(schedule.wy)) {
-            freq='WEEKLY';
-            interval=schedule.wy[0]; // ToDo - handle multiple week entries
-        }
-
-        var recurrenceString = 'RRULE:FREQ=' + freq;
-        if (interval > 1) {recurrenceString += ';INTERVAL='+interval};
-        if (byDayString != '') {recurrenceString += ';BYDAY='+byDayString};
-
-        //var recurrenceString ='RRULE:FREQ=WEEKLY;INTERVAL=4;BYDAY=MO,TH';
-        return recurrenceString;
     }
 
+    ,createEvent: function(start,duration,summary){
+        let event = new Object();
+        event.summary=summary;
+        event.start = {"dateTime":start.toISOString(),"timeZone":timeZone};
+        event.end = {
+            "dateTime":start.add(duration, 'hours').toISOString()
+            ,"timeZone":timeZone};
+        return event;
+    }
+
+    ,firstWeekDate: function(date,cycle) {
+        var nWeeks = date.week();
+        var nCycles = parseInt((nWeeks-1)/cycle); // whole number
+        return date.subtract((nCycles*cycle),'weeks');
+    }
 };
+
+
 
 function getFrequency (schedule) {
      /  /  / "DAILY" / "WEEKLY" / "MONTHLY" / "YEARLY"
@@ -68,4 +81,8 @@ function getFrequency (schedule) {
     let order = new Map(orderArr);
     //let freqArr = [['s',"SECONDLY"], ['m',"MINUTELY"],['h',"HOURLY"],['d',4],['dw',4],['dc',4],['dy',4],['wy',5],['wm',5],['m',6],['y',7]];
     //let frequency = new Map(frequncyArr);
+}
+
+var setTimeZone = (tz) => { 
+    timeZone = tz;
 }
