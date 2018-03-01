@@ -1,5 +1,5 @@
 {
-  "name": "cal-sched",
+  "name": "weekness",
   "version": "0.0.1",
   "description": "",
   "main": "lib/index.js",
@@ -27,15 +27,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mmorrey/cal-sched.git"
+    "url": "git://github.com/mmorrey/weekness.git"
   },
   "keywords": [],
   "author": "Martin Morrey <mmorrey@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mmorrey/cal-sched/issues"
+    "url": "https://github.com/mmorrey/weekness/issues"
   },
-  "homepage": "https://github.com/mmorrey/cal-sched",
+  "homepage": "https://github.com/mmorrey/weekness",
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^3.0.0",
