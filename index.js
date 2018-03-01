@@ -11,8 +11,8 @@ var moment = require('moment');
 // RFC 5545 - https://tools.ietf.org/html/rfc5545
 // freq = "SECONDLY" / "MINUTELY" / "HOURLY" / "DAILY" / "WEEKLY" / "MONTHLY" / "YEARLY"
 // recur-rule-part = ( "FREQ" "=" freq ) / ( "UNTIL" "=" enddate ) / ( "COUNT" "=" 1*DIGIT ) / ( "INTERVAL" "=" 1*DIGIT )
-// ( "BYSECOND" "=" byseclist ) / ( "BYMINUTE" "=" byminlist ) / ( "BYHOUR" "=" byhrlist ) / ( "BYDAY" "=" bywdaylist ) 
-// / ( "BYMONTHDAY" "=" bymodaylist ) / ( "BYYEARDAY" "=" byyrdaylist ) / ( "BYWEEKNO" "=" bywknolist ) / ( "BYMONTH" "=" bymolist )
+// ( "BYSECOND" "=" byseclist ) / ( "BYMINUTE" "=" byminlist ) / ( "BYHOUR" "=" byhrlist ) / ( "BYDAY" "=" bywentryList ) 
+// / ( "BYMONTHDAY" "=" bymoentryList ) / ( "BYYEARDAY" "=" byyrentryList ) / ( "BYWEEKNO" "=" bywknolist ) / ( "BYMONTH" "=" bymolist )
 // / ( "BYSETPOS" "=" bysplist ) / ( "WKST" "=" weekday )
 // weekday     = "SU" / "MO" / "TU" / "WE" / "TH" / "FR" / "SA"
 
@@ -23,34 +23,35 @@ var timeZone = "United Kingdom/London"; // DEFAULT
 module.exports = {
 
     recurrence: function(schedule) {
- 
-        if (typeof schedule === 'object') {
 
-            let day2string = (day) => {
-                var dayStrings = ["SU","MO","TU","WE","TH","FR","SA"];
-                return dayStrings[day-1]; // later.js days are 1-7
-            }
+        // ToDo - handle weekly recurrence in proper later.js object, see https://github.com/bunkat/later/issues/33#issuecomment-30369860 
+ 
+        if (typeof schedule === 'object') {  // ToDo more rigourous check needed here!
             
             var freq = '';
-            var byDayString = '';
+            var entryList = '';
             var interval = 1;
+            var entryScale = '';
 
+            // ToDo - map time unit to scale (see below), and set freq to match max scale 
             if (Array.isArray(schedule.d)) {  // 
                 freq='DAILY';
                 interval=schedule.d[0]; // ToDo - handle multiple day entries
-                byDayString = schedule.d.map(day2string).join(","); // https://codeburst.io/javascript-learn-to-chain-map-filter-and-reduce-acd2d0562cd4
             }
 
             if (Array.isArray(schedule.wy)) {
                 freq='WEEKLY';
+                if (Array.isArray(schedule.d)) {
+                    entryScale = 'day';
+                    entryList = schedule.d.map(day2string).join(","); // string of all days in week which recur https://codeburst.io/javascript-learn-to-chain-map-filter-and-reduce-acd2d0562cd4
+                }
                 interval=schedule.wy[0]; // ToDo - handle multiple week entries
             }
 
             var recurrenceString = 'RRULE:FREQ=' + freq;
             if (interval > 1) {recurrenceString += ';INTERVAL='+interval};
-            if (byDayString != '') {recurrenceString += ';BYDAY='+byDayString};
+            if (entryList != '') {recurrenceString += ';BYDAY='+entryList};
 
-            //var recurrenceString ='RRULE:FREQ=WEEKLY;INTERVAL=4;BYDAY=MO,TH';
             return recurrenceString;
         }
 
@@ -84,6 +85,13 @@ function getFrequency (schedule) {
     //let freqArr = [['s',"SECONDLY"], ['m',"MINUTELY"],['h',"HOURLY"],['d',4],['dw',4],['dc',4],['dy',4],['wy',5],['wm',5],['m',6],['y',7]];
     //let frequency = new Map(frequncyArr);
 }
+
+
+var day2string = (day) => {
+    var dayStrings = ["SU","MO","TU","WE","TH","FR","SA"];
+    return dayStrings[day-1]; // later.js days are 1-7
+}
+
 
 var setTimeZone = (tz) => { 
     timeZone = tz;
