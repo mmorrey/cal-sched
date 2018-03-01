@@ -1,4 +1,4 @@
-# Cal Sched
+#weekness
 
 [![NPM version][npm-image]][npm-url]
 [![NPM downloads][downloads-image]][downloads-url]
