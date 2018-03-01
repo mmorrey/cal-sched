@@ -5,53 +5,102 @@ var moment = require('moment');
 var calSched = require('../index');
 
 
-
-
 describe('#calSched', function() {
 
+    // ********************************
+    // FUNCTION: firstWeekDate
 
-    // First Week, 1 week cycle
+    // 1 week cycle, starting week 9
 
-    var aWednesday = moment('2018-02-28T07:00');  // A Wednesday
+    var wedW9 = moment('2018-02-28T07:00');  // A Wednesday
+    var resultW9 = calSched.firstWeekDate(wedW9,1);
 
     it('firstWeekDate day should be a Wednesday', function() {
-        var result = calSched.firstWeekDate(aWednesday,1);
-        expect(result.isoWeekday()).to.equal(3)
+        expect(resultW9.isoWeekday()).to.equal(3);
     });
 
     it('firstWeekDate year should be 2018', function() {
-        var result = calSched.firstWeekDate(aWednesday,1);
-        expect(result.year()).to.equal(2018);
+        expect(resultW9.year()).to.equal(2018);
     });
 
     it('firstWeekDate ISO week should be 1', function() {
-        var result = calSched.firstWeekDate(aWednesday,1);
-        expect(result.isoWeek()).to.equal(1);
+        expect(resultW9.isoWeek()).to.equal(1);
     });
 
-    // First Week, 2 week cycle
+    // 2 week cycle, starting week 2
 
     var thurW6 = moment('2018-02-08T07:00');  // Thursday, week 6
+    var resultW6 = calSched.firstWeekDate(thurW6,2);
 
     it('firstWeekDate day should be a Thursday', function() {
-        var result = calSched.firstWeekDate(thurW6,2);
-        expect(result.isoWeekday()).to.equal(4)
+        expect(resultW6.isoWeekday()).to.equal(4);
     });
 
     it('firstWeekDate year should be 2018', function() {
-        var result = calSched.firstWeekDate(thurW6,2);
-        expect(result.year()).to.equal(2018);
+        expect(resultW6.year()).to.equal(2018);
     });
 
     it('firstWeekDate ISO week should be 2', function() {
-        var result = calSched.firstWeekDate(thurW6,2);
-        expect(result.isoWeek()).to.equal(2);
+        expect(resultW6.isoWeek()).to.equal(2);
     });
 
-    
-    
-    
-    // convert Moment date into GCal Event
+    // 3 week cycle, starting week 3
+
+    var monW42 = moment('2018-10-15T07:00');  // Monday, week 42
+    var resultW42 = calSched.firstWeekDate(monW42,3);
+
+    it('w42 firstWeekDate day should be a Monday', function() {
+        expect(resultW42.isoWeekday()).to.equal(1);
+    });
+
+    it('w42 firstWeekDate year should be 2018', function() {
+        expect(resultW42.year()).to.equal(2018);
+    });
+
+    it('w42 firstWeekDate ISO week should be 3', function() {
+        expect(resultW42.isoWeek()).to.equal(3);
+    });
+
+    // 3 week cycle, starting week 1
+    var monW43 = moment('2018-10-22T07:00');  // Monday, week 43   
+    var resultW43 = calSched.firstWeekDate(monW43,3);
+
+    it('w43 firstWeekDate day should be a Monday', function() {
+        expect(resultW43.isoWeekday()).to.equal(1);
+    });
+
+    it('w43 firstWeekDate year should be 2018', function() {
+        var result = calSched.firstWeekDate(monW43,3);
+        expect(resultW43.year()).to.equal(2018);
+    });
+
+    it('w43 firstWeekDate ISO week should be 1', function() {
+        var result = calSched.firstWeekDate(monW43,3);
+        expect(resultW43.isoWeek()).to.equal(1);
+    });
+
+    // 4 week cycle, starting week 51
+    var tueW51 = moment('2018-12-18T07:00');  // Tuesday, week 51
+    var resultW51 = calSched.firstWeekDate(tueW51,3);
+
+    it('w43 firstWeekDate day should be a Monday', function() {
+        expect(resultW51.isoWeekday()).to.equal(2);
+    });
+
+    it('w43 firstWeekDate year should be 2018', function() {
+        var result = calSched.firstWeekDate(monW43,3);
+        expect(resultW51.year()).to.equal(2018);
+    });
+
+    it('w43 firstWeekDate ISO week should be 1', function() {
+        var result = calSched.firstWeekDate(monW43,3);
+        expect(resultW51.isoWeek()).to.equal(3);
+    });
+
+
+    // ********************************    
+    // FUNCTION: createEvent
+    // converts Moment date into GCal Event
 
     var event1 = {
         "summary": "Appointment",
@@ -71,6 +120,9 @@ describe('#calSched', function() {
         expect(JSON.stringify(result)).to.equal(JSON.stringify(event1));
     });
 
+    // ********************************
+    // FUNCTION: recurrence
+    // Weekly recurrence string from Later.js style object
 
     // NUMBER OF WEEKS, SINGLE-DAY
 

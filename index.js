@@ -67,9 +67,11 @@ module.exports = {
     }
 
     ,firstWeekDate: function(date,cycle) {
-        var nWeeks = date.week();
+        var newDate = moment(date);  // clone Moment object, to avoid mutability (reference) issues, https://momentjs.com/docs/#/parsing/moment-clone/
+        var nWeeks = newDate.week();
         var nCycles = parseInt((nWeeks-1)/cycle); // whole number
-        return date.subtract((nCycles*cycle),'weeks');
+        console.log(nWeeks,nCycles); 
+        return newDate.subtract((nCycles*cycle),'weeks');
     }
 };
 
