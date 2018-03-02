@@ -8,6 +8,12 @@ var moment = require('moment');
  * @return {string}
  */
 
+var timeUnits = {'s':1,'m':2,'h':3,'d':4,'dw':4,'dc':4,'dy':4,'wy':5,'wm':5,'m':6,'y':7};
+
+//let timeUnitArr = [['s',1], ['m',2],['h',3],['d',4],['dw',4],['dc',4],['dy',4],['wy',5],['wm',5],['m',6],['y',7]];
+//var timeUnitOrder = new Map(timeUnitArr);
+var timeZone = "United Kingdom/London"; // DEFAULT
+
 // RFC 5545 - https://tools.ietf.org/html/rfc5545
 // freq = "SECONDLY" / "MINUTELY" / "HOURLY" / "DAILY" / "WEEKLY" / "MONTHLY" / "YEARLY"
 // recur-rule-part = ( "FREQ" "=" freq ) / ( "UNTIL" "=" enddate ) / ( "COUNT" "=" 1*DIGIT ) / ( "INTERVAL" "=" 1*DIGIT )
@@ -18,7 +24,7 @@ var moment = require('moment');
 
 // ToDo - generalise to secondly, minutely....monthly, yearly
 
-var timeZone = "United Kingdom/London"; // DEFAULT
+
 
 module.exports = {
 
@@ -28,31 +34,44 @@ module.exports = {
  
         if (typeof schedule === 'object') {  // ToDo more rigourous check needed here!
             
-            var freq = '';
-            var entryList = '';
+            // ToDo reduce schedule to max value of internval unit and sub-interval unit 
+            // ToDo - map time unit to scale (see below), and set frequency and subfrequency to match max and next scale 
+            var frequencyProperty = 'wy' // assuming 'WEEKLY';
+            var subfrequencyProperty ='d';
+            var frequencyScale = Object.keys(schedule).map(property2Scale).reduce(maxScale);
+            console.log(frequencyScale);
+            //var matchingUnits = timeUnitOrder.entries().filter();
+            //frequencyProperty = Object.keys(schedule).filter();
+            
+            /*
+            var matchingUnits = timeUnitOrder.entries().filter(function(n) {  // https://stackoverflow.com/questions/16227197/compute-intersection-of-two-arrays-in-javascript
+                return Object.keys(schedule).indexOf(n) > -1;
+            });
+            */
+
+            let frequencyArray = [['s',"SECONDLY"], ['m',"MINUTELY"],['h',"HOURLY"],['d',"DAILY"],['dw',"DAILY"],['dc',"DAILY"],['dy',"DAILY"],['wy',"WEEKLY"],['wm',"WEEKLY"],['m',"MONTHLY"],['y',"YEARLY"]]; 
+            var frequencyMap = new Map(frequencyArray);
+            
             var interval = 1;
-            var entryScale = '';
 
-            // ToDo - map time unit to scale (see below), and set freq to match max scale 
-            if (Array.isArray(schedule.d)) {  // 
-                freq='DAILY';
-                interval=schedule.d[0]; // ToDo - handle multiple day entries
-            }
+            if (Array.isArray(schedule[frequencyProperty])) {  // interval
 
-            if (Array.isArray(schedule.wy)) {
-                freq='WEEKLY';
-                if (Array.isArray(schedule.d)) {
-                    entryScale = 'day';
-                    entryList = schedule.d.map(day2string).join(","); // string of all days in week which recur https://codeburst.io/javascript-learn-to-chain-map-filter-and-reduce-acd2d0562cd4
+                var freq = frequencyMap.get(frequencyProperty);
+                interval=schedule[frequencyProperty][0]; // ToDo - handle multiple entries
+
+                if (Array.isArray(schedule[subfrequencyProperty])) { // sub-interval entries
+                    let entryScale = 'BYDAY';
+                    var entryListString = schedule['d'].map(day2string).join(","); // string of all days in week which recur https://codeburst.io/javascript-learn-to-chain-map-filter-and-reduce-acd2d0562cd4
+                    var entryString = ';'+entryScale+'='+entryListString;
                 }
-                interval=schedule.wy[0]; // ToDo - handle multiple week entries
+
+                var recurrenceString = 'RRULE:FREQ=' + freq;
+                if (interval > 1) {recurrenceString += ';INTERVAL='+interval};
+                if (entryListString != '') {recurrenceString += entryString };
+
+                return recurrenceString;
+
             }
-
-            var recurrenceString = 'RRULE:FREQ=' + freq;
-            if (interval > 1) {recurrenceString += ';INTERVAL='+interval};
-            if (entryList != '') {recurrenceString += ';BYDAY='+entryList};
-
-            return recurrenceString;
         }
 
     }
@@ -78,14 +97,6 @@ module.exports = {
 
 
 
-function getFrequency (schedule) {
-     /  /  / "DAILY" / "WEEKLY" / "MONTHLY" / "YEARLY"
-    let orderArr = [['s',1], ['m',2],['h',3],['d',4],['dw',4],['dc',4],['dy',4],['wy',5],['wm',5],['m',6],['y',7]];
-    let order = new Map(orderArr);
-    //let freqArr = [['s',"SECONDLY"], ['m',"MINUTELY"],['h',"HOURLY"],['d',4],['dw',4],['dc',4],['dy',4],['wy',5],['wm',5],['m',6],['y',7]];
-    //let frequency = new Map(frequncyArr);
-}
-
 
 var day2string = (day) => {
     var dayStrings = ["SU","MO","TU","WE","TH","FR","SA"];
@@ -95,4 +106,13 @@ var day2string = (day) => {
 
 var setTimeZone = (tz) => { 
     timeZone = tz;
+}
+
+var property2Scale = (property) => {
+    //return timeUnitOrder.get(property);
+    return timeUnits[property];
+;}
+
+var maxScale = (scale,max) => {
+    return Math.max(scale,max);
 }
